@@ -27,5 +27,12 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/react": "^16.9.1",
+    "@types/react-dom": "^16.8.5",
+    "tslint": "^5.18.0",
+    "tslint-clean-code": "^0.2.9",
+    "typescript": "^3.5.3"
   }
 }
