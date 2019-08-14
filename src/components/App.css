@@ -1,0 +1,11 @@
+.gif-container {
+  column-count: 4;
+  column-gap: 1em;
+  width: 824px;
+}
+
+.gif {
+  display: block;
+  padding: 3px;
+  width: 100%;
+}

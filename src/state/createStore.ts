@@ -2,8 +2,7 @@ import { applyMiddleware, createStore as reduxCreateStore } from 'redux'
 import { createLogger } from 'redux-logger'
 import promise from 'redux-promise-middleware'
 
-// import { reducer } from './reducer'
-import { reducer } from './ducks/search'
+import { reducer } from './reducer'
 
 const logger = createLogger()
 

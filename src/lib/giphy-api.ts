@@ -22,7 +22,7 @@ export interface Gif {
   title: string
 }
 
-export interface FixedHeight {
+export interface Image {
   url: string
   width: string
   height: string
@@ -31,7 +31,8 @@ export interface FixedHeight {
 }
 
 export interface Images {
-  fixed_height: FixedHeight
+  fixed_height: Image
+  fixed_width: Image
 }
 
 export interface Pagination {

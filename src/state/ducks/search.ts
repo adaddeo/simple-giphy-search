@@ -13,16 +13,9 @@ export interface SearchState {
 
 // Actions
 
-const UPDATE_QUERY = 'search/UPDATE_QUERY'
 const SEARCH_REQUEST = 'search/REQUEST'
+const SEARCH_REQUEST_PENDING = 'search/REQUEST_PENDING'
 const SEARCH_REQUEST_FUFILLED = 'search/REQUEST_FULFILLED'
-
-export interface SearchUpdateQueryAction {
-  type: typeof UPDATE_QUERY
-  payload: {
-    query: string
-  }
-}
 
 interface SearchResponse {
   response: GiphyResponse
@@ -31,7 +24,19 @@ interface SearchResponse {
 
 export interface SearchRequestAction {
   type: typeof SEARCH_REQUEST
-  payload: Promise<SearchResponse>
+  payload: {
+    promise: Promise<SearchResponse>,
+    data: {
+      query: string
+    }
+  }
+}
+
+export interface SearchRequestPendingAction {
+  type: typeof SEARCH_REQUEST_PENDING
+  payload: {
+    query: string
+  }
 }
 
 export interface SearchRequestFulfilledAction {
@@ -40,21 +45,14 @@ export interface SearchRequestFulfilledAction {
 }
 
 export type SearchAction =
-  | SearchUpdateQueryAction
   | SearchRequestAction
+  | SearchRequestPendingAction
   | SearchRequestFulfilledAction
 
 // Action Creators
 
-export const updateQuery = (query: string): SearchUpdateQueryAction => ({
-  type: UPDATE_QUERY,
-  payload: {
-    query
-  }
-})
-
 export const search = (query: string): SearchRequestAction => {
-  const payload =
+  const promise =
     giphySearch({ q: query })
       .then(response => ({
         response,
@@ -63,13 +61,13 @@ export const search = (query: string): SearchRequestAction => {
 
   return {
     type: SEARCH_REQUEST,
-    payload
+    payload: {
+      promise,
+      data: {
+        query
+      }
+    }
   }
-}
-
-export const actions = {
-  search,
-  updateQuery
 }
 
 // Reducer
@@ -78,9 +76,8 @@ export const reducer = (
   state: SearchState = getEmptyState(),
   action: SearchAction
 ): SearchState => {
-  if (action.type === UPDATE_QUERY) {
-    const { payload } = action
-    const { query } = payload
+  if (action.type === SEARCH_REQUEST_PENDING) {
+    const { query } = action.payload
 
     return {
       ...state,
