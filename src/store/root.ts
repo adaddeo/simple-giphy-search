@@ -6,14 +6,14 @@ import {
   createAction,
   createAsyncAction,
   createReducer,
-  isActionOf,
-  RootAction as FRootAction,
-  RootState  as FRootState
+  isActionOf
 } from 'typesafe-actions'
 import { Gif, GiphyResponse } from '../lib/giphy-api'
 import { Dependencies } from './dependencies'
 
 /* Actions & Action Creators */
+
+export const initialize = createAction('INITIALIZE')
 
 export const search = createAction('search/QUERY', action => {
   return (query: string) => action({ query })
@@ -29,11 +29,23 @@ export const fetchTrendingGifs = createAsyncAction(
   'FETCH_TRENDING_GIFS_REQUEST',
   'FETCH_TRENDING_GIFS_SUCCESS',
   'FETCH_TRENDING_GIFS_FAILURE'
-)<string, GiphyResponse, Error, string>()
+)<undefined, GiphyResponse, Error, string>()
 
-export type RootAction = ActionType<typeof search> |  ActionType<typeof fetchSearchGifs> | ActionType<typeof fetchTrendingGifs>
+export type RootAction = ActionType<typeof initialize>
+  | ActionType<typeof search>
+  | ActionType<typeof fetchSearchGifs>
+  | ActionType<typeof fetchTrendingGifs>
 
 /* Epics */
+
+type AppEpic = Epic<RootAction, RootAction, RootState, Dependencies>
+
+export const initializeEpic: AppEpic =
+  action$ =>
+    action$.pipe(
+      filter(isActionOf(initialize)),
+      map(() => fetchTrendingGifs.request())
+    )
 
 /*
  * debounceTime is used to rate-limit incoming search changes so requests
@@ -41,7 +53,7 @@ export type RootAction = ActionType<typeof search> |  ActionType<typeof fetchSea
  *
  * switchMap is used to "cancel" any pending requests.
  */
-export const searchEpic: Epic<RootAction, RootAction, RootState, Dependencies> =
+export const searchEpic: AppEpic =
   action$ =>
     action$.pipe(
       filter(isActionOf(search)),
@@ -49,7 +61,7 @@ export const searchEpic: Epic<RootAction, RootAction, RootState, Dependencies> =
       map(action => fetchSearchGifs.request(action.payload.query))
     )
 
-export const fetchSearchGifsEpic: Epic<RootAction, RootAction, RootState, Dependencies> =
+export const fetchSearchGifsEpic: AppEpic =
   (action$, store, { giphyApi }) =>
     action$
       .pipe(
@@ -64,7 +76,7 @@ export const fetchSearchGifsEpic: Epic<RootAction, RootAction, RootState, Depend
           )
         )
 
-export const fetchTrendingGifsEpic: Epic<RootAction, RootAction, RootState, Dependencies> =
+export const fetchTrendingGifsEpic: AppEpic =
   (action$, store, { giphyApi }) =>
     action$
       .pipe(
@@ -80,6 +92,7 @@ export const fetchTrendingGifsEpic: Epic<RootAction, RootAction, RootState, Depe
         )
 
 export const epic = combineEpics(
+  initializeEpic,
   fetchSearchGifsEpic,
   fetchTrendingGifsEpic,
   searchEpic
@@ -111,7 +124,7 @@ const initialState: RootState = {
 }
 
 export const reducer =
-  createReducer<FRootState, FRootAction>(initialState)
+  createReducer<RootState, RootAction>(initialState)
     .handleAction(search, (state, action) => ({ ...state, query: action.payload.query }))
     .handleAction(fetchSearchGifs.success, (state, action) => ({ ...state, search: giphyResponseToState(action.payload) }))
     .handleAction(fetchTrendingGifs.success, (state, action) => ({ ...state, trending: giphyResponseToState(action.payload) }))

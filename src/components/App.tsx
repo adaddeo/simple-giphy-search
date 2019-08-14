@@ -1,16 +1,19 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
 import { Gif } from '../lib/giphy-api'
-import { RootState, search } from '../store/root'
+import { initialize, RootState, search } from '../store/root'
 import './App.css'
 
-interface AppProps {
+interface Props {
   query: string
   gifs: Gif[],
-  search: typeof search
+  search: (q: string) => void,
+  initialize: () => void
 }
 
-function App(props: AppProps) {
+function App(props: Props) {
+  useEffect(() => { props.initialize() }, [])
+
   function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
     props.search(event.target.value)
   }
@@ -18,31 +21,29 @@ function App(props: AppProps) {
   return (
     <div>
       <input type="text" value={props.query} onChange={handleInputChange} />
-      <ul>
-        { props.gifs.map(gif =>
-            <li key={gif.id}>
-              <video
-                height={gif.images.fixed_height.height}
-                width={gif.images.fixed_height.width}
-                src={gif.images.fixed_height.mp4}
-                autoPlay
-              />
-            </li>
-        )}
-      </ul>
+      { props.gifs.map(gif =>
+          <div key={gif.id}>
+            <video
+              height={gif.images.fixed_height.height}
+              width={gif.images.fixed_height.width}
+              src={gif.images.fixed_height.mp4}
+              autoPlay
+              loop
+            />
+          </div>
+      )}
     </div>
   )
 }
 
 const mapStateToProps = (state: RootState) => {
-  console.log(state)
   return {
     query:  state.query,
-    gifs: state.search.gifs
+    gifs: state.query ? state.search.gifs : state.trending.gifs
   }
 }
 
-const mapDispatchToProps = { search }
+const mapDispatchToProps = { initialize, search }
 
 export default connect(
   mapStateToProps,
