@@ -1,11 +1,16 @@
-import { Gif, GiphyResponse, search as giphySearch } from '../../lib/giphy-api'
+import {
+  GifsResult as GiphyResult,
+  SearchOptions as GiphySearchOptions
+} from '@giphy/js-fetch-api'
+import { IGif } from '@giphy/js-types'
+import giphy from '../../giphy'
 
 // State
 
 export interface SearchState {
   query: string
   isLoading: boolean
-  gifs: Gif[]
+  gifs: IGif[]
   offset?: number
   totalCount?: number
 }
@@ -17,7 +22,7 @@ export const SEARCH_REQUEST_PENDING = 'search/REQUEST_PENDING'
 export const SEARCH_REQUEST_FUFILLED = 'search/REQUEST_FULFILLED'
 
 interface SearchResponse {
-  response: GiphyResponse
+  response: GiphyResult
   query: string
 }
 
@@ -50,9 +55,12 @@ export type SearchAction =
 
 // Action Creators
 
-export const search = (query: string): SearchRequestAction => {
+export const search = (
+  query: string,
+  options?: GiphySearchOptions
+): SearchRequestAction => {
   const promise =
-    giphySearch({ q: query })
+    giphy.search(query, options)
       .then(response => ({
         response,
         query
@@ -109,7 +117,7 @@ const getEmptyState = (): SearchState => ({
   isLoading: false
 })
 
-const giphyResponseToState = (response: GiphyResponse): GifResultState => {
+const giphyResponseToState = (response: GiphyResult): GifResultState => {
   const { data, pagination } = response
 
   return {
@@ -121,7 +129,7 @@ const giphyResponseToState = (response: GiphyResponse): GifResultState => {
 
 // todo clean up
 interface GifResultState {
-  gifs: Gif[]
+  gifs: IGif[]
   offset?: number
   totalCount?: number
 }

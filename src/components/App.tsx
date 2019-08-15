@@ -1,15 +1,15 @@
+import { IGif } from '@giphy/js-types'
 import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
-import { Gif } from '../lib/giphy-api'
 import { search } from '../state/ducks/search'
 import { trending } from '../state/ducks/trending'
 import { RootState } from '../state/reducer'
 import './App.css'
-import GifComponent from './Gif'
+import Gif from './Gif'
 
 interface Props {
   query: string
-  gifs: Gif[],
+  gifs: IGif[],
   search: (q: string) => void
   trending: () => void
 }
@@ -35,7 +35,7 @@ function App(props: Props) {
         <input type="text" value={query} onChange={handleInputChange} />
       </form>
       <div className="gif-container">
-        { props.gifs.map(gif => <div key={gif.id} className="gif"><GifComponent gif={gif} /></div> )}
+        { props.gifs.map(gif => <div key={gif.id} className="gif"><Gif gif={gif} /></div> )}
       </div>
     </div>
   )

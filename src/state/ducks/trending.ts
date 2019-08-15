@@ -1,10 +1,15 @@
-import { Gif, GiphyResponse, trending as giphyTrending } from '../../lib/giphy-api'
+import {
+  GifsResult as GiphyResult,
+  SearchOptions as GiphySearchOptions
+} from '@giphy/js-fetch-api'
+import { IGif } from '@giphy/js-types'
+import giphy from '../../giphy'
 
 // State
 
 export interface TrendingState {
   isLoading: boolean
-  gifs: Gif[]
+  gifs: IGif[]
   offset?: number
   totalCount?: number
 }
@@ -17,7 +22,7 @@ export const TRENDING_REQUEST_FUFILLED = 'trending/REQUEST_FULFILLED'
 
 export interface TrendingRequestAction {
   type: typeof TRENDING_REQUEST
-  payload: Promise<GiphyResponse>
+  payload: Promise<GiphyResult>
 }
 
 export interface TrendingRequestPendingAction {
@@ -26,7 +31,7 @@ export interface TrendingRequestPendingAction {
 
 export interface TrendingRequestFulfilledAction {
   type: typeof TRENDING_REQUEST_FUFILLED
-  payload: GiphyResponse
+  payload: GiphyResult
 }
 
 export type TrendingAction =
@@ -36,8 +41,8 @@ export type TrendingAction =
 
 // Action Creators
 
-export const trending = (): TrendingRequestAction => {
-  const payload = giphyTrending()
+export const trending = (options?: GiphySearchOptions): TrendingRequestAction => {
+  const payload = giphy.trending(options)
 
   return {
     type: TRENDING_REQUEST,
@@ -76,7 +81,7 @@ const getEmptyState = (): TrendingState => ({
   isLoading: false
 })
 
-const giphyResponseToState = (response: GiphyResponse): Partial<TrendingState> => {
+const giphyResponseToState = (response: GiphyResult): Partial<TrendingState> => {
   const { data, pagination } = response
 
   return {

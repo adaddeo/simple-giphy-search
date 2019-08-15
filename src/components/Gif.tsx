@@ -1,8 +1,8 @@
+import { IGif } from '@giphy/js-types'
 import React, { useEffect, useState } from 'react'
-import { Gif } from '../lib/giphy-api'
 
 interface Props {
-  gif: Gif
+  gif: IGif
 }
 
 function GifComponent({ gif }: Props) {
