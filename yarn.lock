@@ -1257,6 +1257,11 @@
   dependencies:
     "@babel/types" "^7.3.0"
 
+"@types/bricks.js@^1.8.0":
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/@types/bricks.js/-/bricks.js-1.8.0.tgz#c1edf3ab17be575d387f63939b5253cd3580aca8"
+  integrity sha512-pjuC3URW7uPIxbxKYXPC+hkd5nWbRnMIc73pHbu3xvRiwJxk7t4UTAdXzt8MpYgifPmeSKe6+ZZtIiB9ihQqFw==
+
 "@types/eslint-visitor-keys@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@types/eslint-visitor-keys/-/eslint-visitor-keys-1.0.0.tgz#1ee30d79544ca84d68d4b3cdb0af4f205663dd2d"

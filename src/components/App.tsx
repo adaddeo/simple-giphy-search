@@ -26,7 +26,7 @@ function App(props: Props) {
   }
 
   return (
-    <div className="app">
+    <div className="app container">
       <nav className="header">
         <div className="header-content container">
           <form onSubmit={handleSubmit}>
@@ -40,9 +40,7 @@ function App(props: Props) {
         </div>
       </nav>
       <div className="main">
-        <div className="container">
-          <Gifs />
-        </div>
+        <Gifs />
       </div>
     </div>
   )
