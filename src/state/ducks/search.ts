@@ -8,14 +8,13 @@ export interface SearchState {
   gifs: Gif[]
   offset?: number
   totalCount?: number
-  count?: number
 }
 
 // Actions
 
-const SEARCH_REQUEST = 'search/REQUEST'
-const SEARCH_REQUEST_PENDING = 'search/REQUEST_PENDING'
-const SEARCH_REQUEST_FUFILLED = 'search/REQUEST_FULFILLED'
+export const SEARCH_REQUEST = 'search/REQUEST'
+export const SEARCH_REQUEST_PENDING = 'search/REQUEST_PENDING'
+export const SEARCH_REQUEST_FUFILLED = 'search/REQUEST_FULFILLED'
 
 interface SearchResponse {
   response: GiphyResponse
@@ -81,7 +80,8 @@ export const reducer = (
 
     return {
       ...state,
-      query
+      query,
+      isLoading: true
     }
   }
 
@@ -95,7 +95,8 @@ export const reducer = (
 
     return {
       ...state,
-      ...giphyResponseToState(response)
+      ...giphyResponseToState(response),
+      isLoading: false
     }
   }
 
@@ -114,8 +115,7 @@ const giphyResponseToState = (response: GiphyResponse): GifResultState => {
   return {
     gifs: data,
     offset: pagination.offset,
-    totalCount: pagination.total_count,
-    count: pagination.count
+    totalCount: pagination.total_count
   }
 }
 
@@ -124,5 +124,4 @@ interface GifResultState {
   gifs: Gif[]
   offset?: number
   totalCount?: number
-  count?: number
 }

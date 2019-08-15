@@ -7,17 +7,21 @@ export interface TrendingState {
   gifs: Gif[]
   offset?: number
   totalCount?: number
-  count?: number
 }
 
 // Actions
 
-const TRENDING_REQUEST = 'trending/REQUEST'
-const TRENDING_REQUEST_FUFILLED = 'trending/REQUEST_FULFILLED'
+export const TRENDING_REQUEST = 'trending/REQUEST'
+export const TRENDING_REQUEST_PENDING = 'trending/REQUEST_PENDING'
+export const TRENDING_REQUEST_FUFILLED = 'trending/REQUEST_FULFILLED'
 
 export interface TrendingRequestAction {
   type: typeof TRENDING_REQUEST
   payload: Promise<GiphyResponse>
+}
+
+export interface TrendingRequestPendingAction {
+  type: typeof TRENDING_REQUEST_PENDING
 }
 
 export interface TrendingRequestFulfilledAction {
@@ -27,6 +31,7 @@ export interface TrendingRequestFulfilledAction {
 
 export type TrendingAction =
   | TrendingRequestAction
+  | TrendingRequestPendingAction
   | TrendingRequestFulfilledAction
 
 // Action Creators
@@ -46,7 +51,7 @@ export const reducer = (
   state: TrendingState = getEmptyState(),
   action: TrendingAction
 ): TrendingState => {
-  if (action.type === TRENDING_REQUEST) {
+  if (action.type === TRENDING_REQUEST_PENDING) {
     return {
       ...state,
       isLoading: true
@@ -58,7 +63,8 @@ export const reducer = (
 
     return {
       ...state,
-      ...giphyResponseToState(payload)
+      ...giphyResponseToState(payload),
+      isLoading: false
     }
   }
 
@@ -76,7 +82,6 @@ const giphyResponseToState = (response: GiphyResponse): Partial<TrendingState> =
   return {
     gifs: data,
     offset: pagination.offset,
-    totalCount: pagination.total_count,
-    count: pagination.count
+    totalCount: pagination.total_count
   }
 }
