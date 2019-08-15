@@ -5,6 +5,7 @@ import { search } from '../state/ducks/search'
 import { trending } from '../state/ducks/trending'
 import { RootState } from '../state/reducer'
 import './App.css'
+import GifComponent from './Gif'
 
 interface Props {
   query: string
@@ -34,17 +35,7 @@ function App(props: Props) {
         <input type="text" value={query} onChange={handleInputChange} />
       </form>
       <div className="gif-container">
-        { props.gifs.map(gif =>
-            <div key={gif.id} className="gif">
-              <video
-                height={gif.images.fixed_width.height}
-                width={gif.images.fixed_width.width}
-                src={gif.images.fixed_width.mp4}
-                autoPlay
-                loop
-              />
-            </div>
-        )}
+        { props.gifs.map(gif => <div key={gif.id} className="gif"><GifComponent gif={gif} /></div> )}
       </div>
     </div>
   )
