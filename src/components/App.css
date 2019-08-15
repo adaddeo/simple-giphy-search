@@ -1,11 +1,65 @@
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.app {
+  margin-top: 60px;
+}
+
+.header {
+  background: #2090ea;
+  height: 60px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.main {
+  padding: 20px;
+}
+
 .gif-container {
   column-count: 4;
   column-gap: 1em;
   width: 824px;
+  margin: 0 auto;
 }
 
 .gif {
   display: block;
   padding: 3px;
   width: 100%;
+}
+
+.footer {
+  margin-top: 40px;
+  padding: 20px;
+}
+
+form {
+  width: 100%;
+}
+
+input[type="text"] {
+  max-width: 100%;
+  width: 100%;
+  border: 0 none;
+  padding: 0 10px;
+  color: #666;
+  border: none;
+  height: 40px;
+  vertical-align: middle;
+  display: inline-block;
 }

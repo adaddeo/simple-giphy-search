@@ -1,15 +1,11 @@
-import { IGif } from '@giphy/js-types'
 import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 import { search } from '../state/ducks/search'
 import { trending } from '../state/ducks/trending'
-import { RootState } from '../state/reducer'
 import './App.css'
-import Gif from './Gif'
+import Gifs from './Gifs'
 
 interface Props {
-  query: string
-  gifs: IGif[],
   search: (q: string) => void
   trending: () => void
 }
@@ -30,27 +26,31 @@ function App(props: Props) {
   }
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <input type="text" value={query} onChange={handleInputChange} />
-      </form>
-      <div className="gif-container">
-        { props.gifs.map(gif => <div key={gif.id} className="gif"><Gif gif={gif} /></div> )}
+    <div className="app">
+      <nav className="header">
+        <div className="header-content container">
+          <form onSubmit={handleSubmit}>
+            <input
+              type="text"
+              placeholder="Search for GIFs"
+              value={query}
+              onChange={handleInputChange}
+            />
+          </form>
+        </div>
+      </nav>
+      <div className="main">
+        <div className="container">
+          <Gifs />
+        </div>
       </div>
     </div>
   )
 }
 
-const mapStateToProps = (state: RootState) => {
-  return {
-    query:  state.search.query,
-    gifs: state.search.query ? state.search.gifs : state.trending.gifs
-  }
-}
-
 const mapDispatchToProps = { search, trending }
 
 export default connect(
-  mapStateToProps,
+  null,
   mapDispatchToProps
 )(App)
