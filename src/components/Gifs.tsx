@@ -2,36 +2,47 @@ import { IGif } from '@giphy/js-types'
 import { Gif } from '@giphy/react-components'
 import React, { useRef } from 'react'
 import { connect } from 'react-redux'
-import { trending } from '../state/ducks/trending'
-import { RootState } from '../state/reducer'
+import { RootState } from '../state'
+import { fetchGifs as fetchGifsAction } from '../state/ducks/gifs'
+import { isLoadingSelector, moreGifsSelector } from '../state/selectors'
 import './Gifs.css'
 import useBricks from './hooks/useBricks'
 import useClientRect from './hooks/useClientRect'
-import useObserver from './hooks/useObserver'
+import useIntersectionObserver from './hooks/useIntersectionObserver'
 import Loader from './Loader'
 
 interface Props {
+  query: string
   gifs: IGif[]
   isLoading: boolean
   moreGifs: boolean
-  trending: () => void
+  fetchGifs: () => void
 }
 
-function Gifs({ isLoading, gifs, moreGifs }: Props) {
-  const container = useRef<HTMLDivElement>(null)
+function Gifs(props: Props) {
+  const { query, gifs, isLoading, moreGifs, fetchGifs } = props
 
-  const { gutter, columns } = useBricks(container, {
-    packed: 'packed',
-    sizes: [
-      { columns: 2, gutter: 8 },
-      { mq: '768px', columns: 3, gutter: 12 },
-      { mq: '1024px', columns: 4, gutter: 16 },
-      { mq: '1260px', columns: 4, gutter: 16 }
-    ]
-  }, [gifs])
+  // This ref will hold the DOM node of the gif container for use by Bricks.js
+  const { ref: bricksContainer, currentSize: { gutter, columns } } = useBricks(
+    {
+      packed: 'packed',
+      sizes: [
+        { columns: 2, gutter: 8 },
+        { mq: '768px', columns: 3, gutter: 12 },
+        { mq: '1024px', columns: 4, gutter: 16 },
+        { mq: '1260px', columns: 4, gutter: 16 }
+      ]
+    },
+    query,
+    [gifs]
+  )
 
-  // Figure out the width of each gif based on the width of the container and the number
-  // of columns and gutter width at the current size
+  // useEffect(() => {
+  //   console.log('effect ran')
+  // }, [bricksOptions.current])
+
+  // Calculate the width each gif should be based on the width of the container and the
+  // number of columns and gutter width at the current viewport size
   let gifWidth = 200
   const [rect, ref] = useClientRect()
 
@@ -41,16 +52,23 @@ function Gifs({ isLoading, gifs, moreGifs }: Props) {
 
   // Setup observed div at the end of gifs to detect when we should attempt to load
   // the next page
-  const loader = useRef<HTMLDivElement>(null)
+  const loaderContainer = useRef<HTMLDivElement>(null)
 
-  useObserver({
-    element: loader.current,
-    onVisiblilityChange: () => console.log('firing')
+  const handleVisibilityChange = (visible: boolean) => {
+    if (visible && !isLoading && moreGifs) {
+      fetchGifs()
+    }
+  }
+
+  useIntersectionObserver({
+    element: loaderContainer.current,
+    onVisiblilityChange: handleVisibilityChange,
+    rootMargin: '200px'
   })
 
   return (
     <div ref={ref}>
-      <div ref={container}>
+      <div ref={bricksContainer} key={query}>
         { gifs.map(
             gif =>
               <Gif
@@ -63,7 +81,7 @@ function Gifs({ isLoading, gifs, moreGifs }: Props) {
       </div>
 
       { moreGifs &&
-        <div ref={loader} className="loader-container">
+        <div ref={loaderContainer} className="loader-container">
           { isLoading && <Loader /> }
         </div>
       }
@@ -72,15 +90,15 @@ function Gifs({ isLoading, gifs, moreGifs }: Props) {
 }
 
 const mapStateToProps = (state: RootState) => {
-  const gifState = state.search.query ? state.search : state.trending
   return {
-    gifs:  gifState.gifs,
-    isLoading: gifState.isLoading,
-    moreGifs: (gifState.offset || -1) < (gifState.totalCount || 1) - 1
+    query: state.search.query,
+    gifs: state.gifs.gifs,
+    isLoading: isLoadingSelector(state),
+    moreGifs: moreGifsSelector(state)
   }
 }
 
 export default connect(
   mapStateToProps,
-  { trending }
+  { fetchGifs: fetchGifsAction }
 )(Gifs)

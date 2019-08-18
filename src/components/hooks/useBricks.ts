@@ -1,37 +1,49 @@
 import Bricks, { BricksInstance, BricksOptions, SizeDetail } from 'bricks.js'
-import { RefObject, useEffect, useRef, useState } from 'react'
+import { RefObject, useEffect, useRef } from 'react'
 
 export default (
-  container: RefObject<HTMLDivElement>,
   bricksOptions: Omit<BricksOptions, 'container'>,
-  dependencies?: any[]
-) => {
-  const bricksInstance = useRef<BricksInstance | null>(null)
-  const [size, setSize] = useState(3)
+  key: string = '',
+  dependencies: any[] = []
+): {
+  ref: RefObject<HTMLDivElement>,
+  currentSize: SizeDetail
+} => {
+  const container = useRef<HTMLDivElement | null>(null)
+  const instance = useRef<BricksInstance | null>(null)
+  const keyRef = useRef<string>(key)
 
-  useEffect(() => {
-    const onResize = () => {
-      setSize(size + 1)
-    }
+  useEffect(
+    () => {
 
-    if (bricksInstance.current === null) {
-      bricksInstance.current = Bricks({
-        ...bricksOptions,
-        container: container.current!,
-      })
+      // A new Bricks.js will be instantiated when one doesn't exist or the key changes.
+      if (container.current !== null && (instance.current === null || keyRef.current !== key)) {
+        instance.current = Bricks({
+          ...bricksOptions,
+          container: container.current,
+        })
 
-      bricksInstance.current
-        .resize(true)
-        .pack()
-        .on('resize', onResize)
-    }
+        instance.current
+          .resize(true)
+          .pack()
 
-    // Improve performance by detecting if only changes to items are additions in which
-    // case the more efficient update can be called.
-    bricksInstance.current.pack()
-  })
+        keyRef.current = key
+      }
 
-  return getCurrentSize(bricksOptions.sizes)
+      if (instance.current !== null) {
+        // At this point we are calling the more efficient update with the assumption that
+        // already packed gifs haven't been removed or modified
+        instance.current.update()
+      }
+    },
+
+    // Disable linting to support additional dependencies. Note: brickOptions aren't
+    // included and thus can't be dynamically set.
+    // eslint-disable-next-line
+    [container, ...dependencies]
+  )
+
+  return { ref: container, currentSize: getCurrentSize(bricksOptions.sizes) }
 }
 
 /*

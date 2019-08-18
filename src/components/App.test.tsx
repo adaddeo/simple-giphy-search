@@ -1,23 +1,12 @@
-import { mount } from 'enzyme'
+import { shallow } from 'enzyme'
 import React from 'react'
-import ReactDOM from 'react-dom'
-import createMockStore from 'redux-mock-store'
-import App from './App'
+import { App } from './App'
 
-const mockStore = createMockStore()
-const getInitialState = () => ({
-  search: {
-    query: '',
-    gifs: []
-  },
-  trending: {
-    gifs: []
+it('renders without creashing', () => {
+  const props = {
+    search: jest.fn()
   }
-})
-
-it('renders without crashing', () => {
-  const store = mockStore(getInitialState())
-  const div = document.createElement('div')
-  ReactDOM.render(<App store={store} /> , div)
-  ReactDOM.unmountComponentAtNode(div)
+  const wrapper = shallow(<App {...props} />)
+  expect(wrapper.find('.app')).toExist()
+  expect(wrapper.find('input')).toHaveValue('')
 })

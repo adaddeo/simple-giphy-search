@@ -1,19 +1,14 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { connect } from 'react-redux'
-import { search } from '../state/ducks/search'
-import { trending } from '../state/ducks/trending'
+import { search as searchAction } from '../state/ducks/search'
 import './App.css'
 import Gifs from './Gifs'
 
 interface Props {
   search: (q: string) => void
-  trending: () => void
 }
 
-function App(props: Props) {
-  // eslint-disable-next-line
-  useEffect(() => { props.trending() }, [])
-
+export function App({ search }: Props) {
   const [query, setQuery] = useState('')
 
   function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -21,7 +16,7 @@ function App(props: Props) {
   }
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    props.search(query)
+    search(query)
     event.preventDefault()
   }
 
@@ -46,7 +41,7 @@ function App(props: Props) {
   )
 }
 
-const mapDispatchToProps = { search, trending }
+const mapDispatchToProps = { search: searchAction }
 
 export default connect(
   null,

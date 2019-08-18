@@ -1,43 +1,33 @@
 import configureMockStore from 'redux-mock-store'
 import promise from 'redux-promise-middleware'
+import thunk from 'redux-thunk'
+import { FETCH_PENDING } from './gifs'
 import {
   reducer,
   search,
-  SEARCH_REQUEST_FUFILLED,
-  SEARCH_REQUEST_PENDING
+  UPDATE_QUERY
 } from './search'
 
-jest.mock('node-fetch')
-import fetch from 'node-fetch'
-const { Response } = jest.requireActual('node-fetch')
+jest.mock('@giphy/js-fetch-api')
+import giphy from 'node-fetch'
 
-const middleware = [promise]
+const middleware = [thunk, promise]
 const mockStore = configureMockStore(middleware)
-const mockGiphyResponse = {
-  data: [{ id: 0 }, { id: 1 }],
-  pagination: {
-    offset: 0,
-    total_count: 1234,
-    count: 25
-  }
-}
 
 describe('search duck', () => {
   describe('action creators' , () => {
-    describe('search', () => {
-      it(`creates ${SEARCH_REQUEST_PENDING} and ${SEARCH_REQUEST_FUFILLED} actions`, () => {
-        fetch.mockReturnValue(Promise.resolve(new Response(JSON.stringify(mockGiphyResponse))))
+    describe('updateQuery', () => {
+      it(`dispatches ${UPDATE_QUERY} and ${FETCH_PENDING} actions`, () => {
 
         const expectedActions = [
-          { type: SEARCH_REQUEST_PENDING, payload: { query: 'new' } },
-          { type: SEARCH_REQUEST_FUFILLED, payload: { response: mockGiphyResponse, query: 'new' } }
+          { type: UPDATE_QUERY, payload: { query: 'new' } },
+          { type: FETCH_PENDING }
         ]
 
-        const store = mockStore({ query: 'old', gifs: [], isLoading: false })
+        const store = mockStore({ search: { query: 'old' }, gifs: { gifs: [], offset: 0, id: 0 } })
 
-        return store.dispatch(search('new')).then(() => {
-          expect(store.getActions()).toEqual(expectedActions)
-        })
+        store.dispatch(search('new'))
+        expect(store.getActions()).toEqual(expectedActions)
       })
     })
   })
@@ -45,60 +35,21 @@ describe('search duck', () => {
   describe('reducer', () => {
     it('should return the initial state', () => {
       expect(reducer(undefined, {})).toEqual({
-        query: '',
-        gifs: [],
-        isLoading: false
+        query: ''
       })
     })
 
-    describe(SEARCH_REQUEST_PENDING, () => {
-      it('should update query and isLoading', () => {
+    describe(UPDATE_QUERY, () => {
+      it('should update query', () => {
         expect(
-          reducer({ query: 'old', gifs: [], isLoading: false }, {
-            type: SEARCH_REQUEST_PENDING,
+          reducer({ query: 'old' }, {
+            type: UPDATE_QUERY,
             payload: {
               query: 'new'
             }
           })
         ).toMatchObject({
-          query: 'new',
-          isLoading: true
-        })
-      })
-    })
-
-    describe(SEARCH_REQUEST_FUFILLED, () => {
-      it('should update gifs, totalCount, offset and isLoading', () => {
-        expect(
-          reducer({ query: 'hello', gifs: [], isLoading: true }, {
-            type: SEARCH_REQUEST_FUFILLED,
-            payload: {
-              response: mockGiphyResponse,
-              query: 'hello'
-            }
-          })
-        ).toEqual({
-          query: 'hello',
-          isLoading: false,
-          gifs: mockGiphyResponse.data,
-          totalCount: mockGiphyResponse.pagination.total_count,
-          offset: mockGiphyResponse.pagination.offset
-        })
-      })
-
-      it('should do nothing if query has changed', () => {
-        expect(
-          reducer({ query: 'hi', gifs: [], isLoading: false }, {
-            type: SEARCH_REQUEST_FUFILLED,
-            payload: {
-              response: mockGiphyResponse,
-              query: 'hello'
-            }
-          })
-        ).toEqual({
-          query: 'hi',
-          isLoading: false,
-          gifs: []
+          query: 'new'
         })
       })
     })
