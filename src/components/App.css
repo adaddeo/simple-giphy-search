@@ -9,6 +9,7 @@ html, body {
 
 .container {
   width: 480px;
+  padding: 0 8px;
 }
 
 @media (min-width: 768px) {
@@ -48,19 +49,6 @@ html, body {
   margin: 0 auto;
 }
 
-.gif-container {
-  column-count: 4;
-  column-gap: 1em;
-  width: 824px;
-  margin: 0 auto;
-}
-
-.gif {
-  display: block;
-  padding: 3px;
-  width: 100%;
-}
-
 .footer {
   margin-top: 40px;
   padding: 20px;
@@ -81,4 +69,5 @@ input[type="text"] {
   vertical-align: middle;
   display: inline-block;
   box-sizing: border-box;
+  border-radius: 3px;
 }
