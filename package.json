@@ -2,6 +2,7 @@
   "name": "simple-giphy-search",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://adaddeo.github.io/simple-giphy-search",
   "dependencies": {
     "@giphy/js-fetch-api": "^1.1.5",
     "@giphy/js-types": "^1.1.2",
@@ -19,6 +20,8 @@
     "reselect": "^4.0.0"
   },
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
