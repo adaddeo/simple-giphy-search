@@ -7,9 +7,7 @@ import { fetchGifs as fetchGifsAction } from '../state/ducks/gifs'
 import { openGif as openGifAction } from '../state/ducks/viewer'
 import { isLoadingSelector, moreGifsSelector } from '../state/selectors'
 import './Gifs.css'
-import useBricks from './hooks/useBricks'
-import useClientRect from './hooks/useClientRect'
-import useIntersectionObserver from './hooks/useIntersectionObserver'
+import { useBricks, useClientRect, useIntersectionObserver } from './hooks'
 import Loader from './Loader'
 
 interface Props {

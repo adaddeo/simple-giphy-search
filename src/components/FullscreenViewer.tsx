@@ -43,7 +43,7 @@ export function FullscreenViewer({ gif, close }: Props) {
     return () => {
       window.removeEventListener('keydown', handler)
     }
-  }, [])
+  }, [close])
 
   const handleClose = (event: MouseEvent) => {
     close()
