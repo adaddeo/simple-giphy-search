@@ -43,7 +43,9 @@ export function App({ search }: Props) {
   )
 }
 
-const mapDispatchToProps = { search: searchAction }
+const mapDispatchToProps = {
+  search: searchAction
+}
 
 export default connect(
   null,

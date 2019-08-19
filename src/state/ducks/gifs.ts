@@ -110,7 +110,7 @@ export const reducer = (
 
     const { data, pagination } = response
 
-    // This de-dupe method could be made more efficient by storing an ids Map in state
+    // This de-dupe method could be made more efficient by storing ids in a Map in state
     const gifIds = state.gifs.reduce(
       (acc: any, g) => {
         acc[g.id] = true

@@ -6,7 +6,7 @@ import { RootState } from '../state'
 import { close as closeAction } from '../state/ducks/viewer'
 import { viewGifSelector } from '../state/selectors'
 import './FullscreenViewer.css'
-import useClientRect from './hooks/useClientRect'
+import { useClientRect } from './hooks'
 
 interface Props {
   gif: IGif | null
@@ -15,7 +15,7 @@ interface Props {
 
 export function FullscreenViewer({ gif, close }: Props) {
 
-  // We will use the client rectable to determine maximum gif width
+  // We will use the client rectangle of our viewer to determine maximum gif width
   const [rect, ref] = useClientRect()
 
   // Prevent scrolling when viewer is open
@@ -39,7 +39,6 @@ export function FullscreenViewer({ gif, close }: Props) {
 
     window.addEventListener('keydown', handler)
 
-    // Remove event listeners on cleanup
     return () => {
       window.removeEventListener('keydown', handler)
     }
@@ -56,13 +55,13 @@ export function FullscreenViewer({ gif, close }: Props) {
 
   let width = 600
 
+  // Fit using a "contain" model, maximizing the size while keep both the height and
+  // width in bounds.
   if (rect !== null) {
     const { original } = gif.images
     // Don't warp the gif more than 2x
     const maxWidth = Math.min(original.width * 2, rect.width)
 
-    // Fit using a "contain" model, maximizing the size while keep both the height and
-    // width in bounds.
     if (original.height / original.width * maxWidth > rect.height) {
       width = rect.height * original.width / original.height
     } else {

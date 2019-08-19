@@ -19,7 +19,7 @@ interface Props {
   openGif: (idx: number) => void
 }
 
-function Gifs(props: Props) {
+export function Gifs(props: Props) {
   const { query, gifs, isLoading, moreGifs, fetchGifs, openGif } = props
 
   const handleGifClick = (idx: number, event: SyntheticEvent<HTMLElement, Event>) => {
@@ -50,7 +50,7 @@ function Gifs(props: Props) {
   // Calculate the width each gif should be based on the width of the container and the
   // number of columns and gutter width at the current viewport size
   let gifWidth = 200
-  const [rect, ref] = useClientRect()
+  const [rect, contentContainer] = useClientRect()
 
   if (rect !== null) {
     gifWidth = Math.floor((rect.width - gutter * (columns - 1)) / columns)
@@ -73,7 +73,7 @@ function Gifs(props: Props) {
   })
 
   return (
-    <div ref={ref}>
+    <div ref={contentContainer}>
       <div ref={bricksContainer} key={query}>
         { gifs.map(
             (gif, idx) =>
