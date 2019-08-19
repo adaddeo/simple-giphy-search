@@ -110,7 +110,17 @@ export const reducer = (
 
     const { data, pagination } = response
 
-    const gifs = [...state.gifs, ...data]
+    // This de-dupe method could be made more efficient by storing an ids Map in state
+    const gifIds = state.gifs.reduce(
+      (acc: any, g) => {
+        acc[g.id] = true
+        return acc;
+      },
+    {})
+
+    // Only add gifs that aren't already in state
+    const gifs = [...state.gifs, ...data.filter(g => gifIds[g.id] === undefined)]
+
     // Account for the possibility that requests come back out-of-order
     const offset = Math.max(state.offset, pagination.offset + pagination.count)
 

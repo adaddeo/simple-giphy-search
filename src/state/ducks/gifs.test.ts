@@ -95,5 +95,25 @@ describe('gifs duck', () => {
         expect(reducer(state, action)).toEqual(expectedState)
       })
     })
+
+    describe(FETCH_FUFILLED, () => {
+      it('does not add already loaded gifs', () => {
+        const state = {
+          ...getEmptyGifsState(0),
+          gifs: mockGiphyResponse.data,
+          pendingRequests: 1
+        }
+
+        const action = {
+          type: FETCH_FUFILLED,
+          payload: {
+            id: 0,
+            response: mockGiphyResponse
+          }
+        }
+
+        expect(reducer(state, action).gifs).toEqual(mockGiphyResponse.data)
+      })
+    })
   })
 })
