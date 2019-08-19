@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.css": "/simple-giphy-search/static/css/main.44a691fe.chunk.css",
+    "main.css": "/simple-giphy-search/static/css/main.b7fe67df.chunk.css",
     "main.js": "/simple-giphy-search/static/js/main.c0409674.chunk.js",
     "main.js.map": "/simple-giphy-search/static/js/main.c0409674.chunk.js.map",
     "runtime~main.js": "/simple-giphy-search/static/js/runtime~main.7225e371.js",
@@ -8,8 +8,8 @@
     "static/js/2.ab53df14.chunk.js": "/simple-giphy-search/static/js/2.ab53df14.chunk.js",
     "static/js/2.ab53df14.chunk.js.map": "/simple-giphy-search/static/js/2.ab53df14.chunk.js.map",
     "index.html": "/simple-giphy-search/index.html",
-    "precache-manifest.ba9a6adcc7dff32f6ebc79d0711cdb56.js": "/simple-giphy-search/precache-manifest.ba9a6adcc7dff32f6ebc79d0711cdb56.js",
+    "precache-manifest.e18949e0b7ca236cf583d93d78b71a3f.js": "/simple-giphy-search/precache-manifest.e18949e0b7ca236cf583d93d78b71a3f.js",
     "service-worker.js": "/simple-giphy-search/service-worker.js",
-    "static/css/main.44a691fe.chunk.css.map": "/simple-giphy-search/static/css/main.44a691fe.chunk.css.map"
+    "static/css/main.b7fe67df.chunk.css.map": "/simple-giphy-search/static/css/main.b7fe67df.chunk.css.map"
   }
 }
