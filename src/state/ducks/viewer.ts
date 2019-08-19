@@ -1,5 +1,4 @@
 import { RootAction } from '../'
-import { ThunkDispatch, ThunkResult } from '../index'
 
 // State
 
@@ -23,7 +22,7 @@ export interface OpenGifAction {
   }
 }
 
-export type SearchAction =
+export type ViewerAction =
   | CloseAction
   | OpenGifAction
 
