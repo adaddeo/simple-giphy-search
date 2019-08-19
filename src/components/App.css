@@ -10,25 +10,25 @@ html, body {
 }
 
 .container {
-  width: 480px;
+  max-width: 480px;
   padding: 0 8px;
 }
 
 @media (min-width: 768px) {
   .container {
-    width: 720px;
+    max-width: 720px;
   }
 }
 
 @media (min-width: 1024px) {
   .container {
-    width: 980px;
+    max-width: 980px;
   }
 }
 
 @media (min-width: 1260px) {
   .container {
-    width: 1200px;
+    max-width: 1200px;
   }
 }
 
