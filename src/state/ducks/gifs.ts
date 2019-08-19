@@ -1,5 +1,6 @@
 import { GifsResult as GiphyResult } from '@giphy/js-fetch-api'
 import { IGif } from '@giphy/js-types'
+import { AsyncAction } from 'redux-promise-middleware'
 import giphy from '../../giphy'
 import { ThunkDispatch, ThunkGetState, ThunkResult } from '../index'
 import { RootAction } from '../index'
@@ -40,7 +41,7 @@ interface FetchResult {
   response: GiphyResult
 }
 
-export interface FetchAction {
+export interface FetchAction extends AsyncAction {
   type: typeof FETCH
   payload: Promise<FetchResult>
 }
@@ -78,17 +79,16 @@ export const fetchGifs = (retry: boolean = true): ThunkResult<FetchAction> => {
       }
     })
 
+    // @ts-ignore the redux-promise-middleware will transform this to a promise
     return dispatch({
       type: FETCH,
       payload
     }).catch(() => {
       // Retry once
       if (retry) {
-        console.log('retrying')
         return dispatch(fetchGifs(false))
       } else {
         return Promise.resolve()
-        console.log('NOT RETRYING')
       }
     })
   }
