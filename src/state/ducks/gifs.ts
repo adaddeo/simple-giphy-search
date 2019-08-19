@@ -82,7 +82,7 @@ export const fetchGifs = (): ThunkResult<FetchAction> => {
 
 // Reducer
 
-export const getEmptyState = (id: number = 0) => ({
+export const getEmptyState = (id: number = 0): GifsState => ({
   id,
   gifs: [],
   pendingRequests: 0,

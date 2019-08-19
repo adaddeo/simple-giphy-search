@@ -1,26 +1,12 @@
 import * as fetch from 'jest-fetch-mock'
-import configureMockStore from 'redux-mock-store'
-import promise from 'redux-promise-middleware'
-import thunk from 'redux-thunk'
+import { getEmptyState, mockGiphyResponse, mockStore } from '../test-helpers'
 import {
   FETCH_FUFILLED,
   FETCH_PENDING,
   fetchGifs,
-  getEmptyState,
+  getEmptyState as getEmptyGifsState,
   reducer
 } from './gifs'
-
-const middleware = [thunk, promise]
-const mockStore = configureMockStore(middleware)
-const mockGiphyResponse = {
-  meta: { response_id: 'response_id' },
-  data: [{ id: '0' }, { id: '1' }],
-  pagination: {
-    offset: 0,
-    total_count: 1234,
-    count: 25
-  }
-}
 
 describe('gifs duck', () => {
   describe('action creators' , () => {
@@ -33,12 +19,7 @@ describe('gifs duck', () => {
           { type: FETCH_FUFILLED, payload: { id: 0, response: mockGiphyResponse } }
         ]
 
-        const store = mockStore({
-          gifs: getEmptyState(),
-          search: {
-            query: ''
-          }
-        })
+        const store = mockStore(getEmptyState())
 
         return store.dispatch(fetchGifs()).then(() => {
           expect(store.getActions()).toMatchObject(expectedActions)
@@ -49,60 +30,69 @@ describe('gifs duck', () => {
 
   describe('reducer', () => {
     it('should return the initial state', () => {
-      expect(reducer(undefined, {})).toEqual(getEmptyState())
+      expect(reducer(undefined, {})).toEqual(getEmptyGifsState())
     })
 
     describe(FETCH_PENDING, () => {
       it('should increment pendingRequests', () => {
-        expect(
-          reducer({ gifs: [], pendingRequests: 0 }, {
-            type: FETCH_PENDING
-          })
-        ).toMatchObject({ pendingRequests: 1 })
+        const state = {
+          gifs: [],
+          pendingRequests: 0
+        }
+        const action = {
+          type: FETCH_PENDING
+        }
+        const expectedState = {
+          pendingRequests: state.pendingRequests + 1
+        }
+
+        expect(reducer(state, action)).toMatchObject(expectedState)
       })
     })
 
     describe(FETCH_FUFILLED, () => {
       it('should update gifs, totalCount, offset and decrement pendingRequests', () => {
+        const id = 0
         const state = {
-          ...getEmptyState(),
+          ...getEmptyGifsState(),
+          id,
           pendingRequests: 1
         }
-
-        expect(
-          reducer(state, {
-            type: FETCH_FUFILLED,
-            payload: {
-              id: 0,
-              response: mockGiphyResponse
-            }
-          })
-        ).toEqual({
-          id: 0,
+        const action = {
+          type: FETCH_FUFILLED,
+          payload: {
+            id,
+            response: mockGiphyResponse
+          }
+        }
+        const expectedState = {
+          id,
           pendingRequests: 0,
           gifs: mockGiphyResponse.data,
           totalCount: mockGiphyResponse.pagination.total_count,
           offset: mockGiphyResponse.pagination.offset + mockGiphyResponse.pagination.count
-        })
+        }
+
+        expect(reducer(state, action)).toEqual(expectedState)
       })
     })
 
     describe(FETCH_FUFILLED, () => {
       it('ignores actions with a different id', () => {
         const state = {
-          ...getEmptyState(1),
+          ...getEmptyGifsState(1),
           pendingRequests: 1
         }
+        const action = {
+          type: FETCH_FUFILLED,
+          payload: {
+            id: 0,
+            response: mockGiphyResponse
+          }
+        }
+        const expectedState = state
 
-        expect(
-          reducer(state, {
-            type: FETCH_FUFILLED,
-            payload: {
-              id: 0,
-              response: mockGiphyResponse
-            }
-          })
-        ).toEqual(state)
+        expect(reducer(state, action)).toEqual(expectedState)
       })
     })
   })

@@ -1,5 +1,5 @@
+import { RootAction } from '../'
 import { ThunkDispatch, ThunkResult } from '../index'
-import { RootAction } from '../index'
 import { fetchGifs } from './gifs'
 
 // State
@@ -41,8 +41,12 @@ export const search = (query: string): ThunkResult<void> => {
 
 // Reducer
 
+export const getEmptyState = (): SearchState => ({
+  query: ''
+})
+
 export const reducer = (
-  state: SearchState = { query: '' },
+  state: SearchState = getEmptyState(),
   action: RootAction
 ): SearchState => {
   if (action.type === UPDATE_QUERY) {
