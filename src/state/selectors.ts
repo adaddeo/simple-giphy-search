@@ -13,8 +13,8 @@ export const moreGifsSelector = createSelector<RootState, number, number | undef
   (offset, totalCount) => totalCount === undefined || offset < totalCount
 )
 
-export const viewerGif = createSelector <RootState, number | null, IGif[], IGif | null>(
-  state => state.viewer.index,
+export const viewGifSelector = createSelector <RootState, number | null, IGif[], IGif | null>(
+  state => state.viewer.gifIndex,
   state => state.gifs.gifs,
   (index, gifs) => index !== null ? gifs[index] : null
 )
