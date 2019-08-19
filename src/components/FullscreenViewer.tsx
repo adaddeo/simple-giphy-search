@@ -1,6 +1,6 @@
 import { IGif } from '@giphy/js-types'
 import { Gif } from '@giphy/react-components'
-import React, { KeyboardEvent, MouseEvent, useEffect } from 'react'
+import React, { MouseEvent, useEffect } from 'react'
 import { connect } from 'react-redux'
 import { RootState } from '../state'
 import { close as closeAction } from '../state/ducks/viewer'
