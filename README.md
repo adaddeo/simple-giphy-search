@@ -22,3 +22,7 @@ _@giphy/react-components_ is being used for its `Gif` component. This component 
 #### Testing
 
 I wrote fairly robust tests for action creators, reducers and selectors. Test written for components are not as strong at this point.
+
+#### UI
+
+The UI is fairly minimal. A couple other features I considered supporting but decided were "out-of-scope" were supporting back/forward when opening and closing gifs and a carousel mode for navigating gifs while in the fullscreen viewer. 
