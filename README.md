@@ -25,4 +25,4 @@ I wrote fairly robust tests for action creators, reducers and selectors. Test wr
 
 #### UI
 
-The UI is fairly minimal. A couple other features I considered supporting but decided were "out-of-scope" were supporting back/forward when opening and closing gifs and a carousel mode for navigating gifs while in the fullscreen viewer. 
+The UI is fairly minimal. A couple other features I considered supporting but decided were "out-of-scope" were supporting back/forward when opening and closing gifs, and a more feature-rich fullscreen viwer (carousel mode for navigation and action buttons such as close, download, copy, share).
