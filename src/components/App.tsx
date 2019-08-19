@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { connect } from 'react-redux'
 import { search as searchAction } from '../state/ducks/search'
 import './App.css'
+import FullscreenViewer from './FullscreenViewer'
 import Gifs from './Gifs'
 
 interface Props {
@@ -36,6 +37,7 @@ export function App({ search }: Props) {
       </nav>
       <div className="main">
         <Gifs />
+        <FullscreenViewer />
       </div>
     </div>
   )

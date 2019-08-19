@@ -1,0 +1,25 @@
+.fullscreen-viewer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  height: 100%;
+  width: 100%;
+  background: rgba(64, 64, 64, 0.9);
+  cursor: pointer;
+  z-index: 1010;
+  display: flex;
+  align-items: center;
+  justify-content: center
+}
+
+.fullscreen-viewer-content {
+  width: calc(100% - 80px);
+  height: calc(100% - 80px);
+  max-width: 1200px;
+  max-height: 1200px;
+  display: flex;
+  align-items: center;
+  justify-content: center
+}

@@ -1,9 +1,10 @@
 import { IGif } from '@giphy/js-types'
 import { Gif } from '@giphy/react-components'
-import React, { useRef } from 'react'
+import React, { SyntheticEvent, useRef } from 'react'
 import { connect } from 'react-redux'
 import { RootState } from '../state'
 import { fetchGifs as fetchGifsAction } from '../state/ducks/gifs'
+import { openGif as openGifAction } from '../state/ducks/viewer'
 import { isLoadingSelector, moreGifsSelector } from '../state/selectors'
 import './Gifs.css'
 import useBricks from './hooks/useBricks'
@@ -17,10 +18,17 @@ interface Props {
   isLoading: boolean
   moreGifs: boolean
   fetchGifs: () => void
+  openGif: (idx: number) => void
 }
 
 function Gifs(props: Props) {
-  const { query, gifs, isLoading, moreGifs, fetchGifs } = props
+  const { query, gifs, isLoading, moreGifs, fetchGifs, openGif } = props
+
+  const handleGifClick = (idx: number, event: SyntheticEvent<HTMLElement, Event>) => {
+    openGif(idx)
+    event.stopPropagation()
+    event.preventDefault()
+  }
 
   // This ref will hold the DOM node of the gif container for use by Bricks.js
   const { ref: bricksContainer, currentSize: { gutter, columns } } = useBricks(
@@ -70,12 +78,13 @@ function Gifs(props: Props) {
     <div ref={ref}>
       <div ref={bricksContainer} key={query}>
         { gifs.map(
-            gif =>
+            (gif, idx) =>
               <Gif
                 key={gif.id}
                 gif={gif}
                 width={gifWidth}
                 backgroundColor="#e8f4fd"
+                onGifClick={(g, e) => handleGifClick(idx, e)}
               />
         )}
       </div>
@@ -98,7 +107,12 @@ const mapStateToProps = (state: RootState) => {
   }
 }
 
+const mapDispatchToProps = {
+  fetchGifs: fetchGifsAction,
+  openGif: openGifAction
+}
+
 export default connect(
   mapStateToProps,
-  { fetchGifs: fetchGifsAction }
+  mapDispatchToProps
 )(Gifs)
