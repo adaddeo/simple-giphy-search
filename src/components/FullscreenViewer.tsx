@@ -1,6 +1,6 @@
 import { IGif } from '@giphy/js-types'
 import { Gif } from '@giphy/react-components'
-import React, { MouseEvent, useEffect } from 'react'
+import React, { MouseEvent, SyntheticEvent, useEffect } from 'react'
 import { connect } from 'react-redux'
 import { RootState } from '../state'
 import { close as closeAction } from '../state/ducks/viewer'
@@ -44,8 +44,9 @@ export function FullscreenViewer({ gif, close }: Props) {
     }
   }, [close])
 
-  const handleClose = (event: MouseEvent) => {
+  const handleClose = (event: MouseEvent | SyntheticEvent) => {
     close()
+    event.stopPropagation()
     event.preventDefault()
   }
 
@@ -76,6 +77,7 @@ export function FullscreenViewer({ gif, close }: Props) {
           gif={gif}
           width={width}
           backgroundColor="black"
+          onGifClick={(g, e) => handleClose(e) }
         />
       </div>
     </div>

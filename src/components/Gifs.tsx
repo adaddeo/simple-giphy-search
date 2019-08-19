@@ -23,7 +23,7 @@ export function Gifs(props: Props) {
   const { query, gifs, isLoading, moreGifs, fetchGifs, openGif } = props
 
   // Initial load of trending gifs
-  useEffect(fetchGifs, [fetchGifs])
+  useEffect(() => { fetchGifs() }, [fetchGifs])
 
   const handleGifClick = (idx: number, event: SyntheticEvent<HTMLElement, Event>) => {
     openGif(idx)
