@@ -1,6 +1,6 @@
 import { IGif } from '@giphy/js-types'
 import { Gif } from '@giphy/react-components'
-import React, { SyntheticEvent, useRef } from 'react'
+import React, { SyntheticEvent, useEffect, useRef } from 'react'
 import { connect } from 'react-redux'
 import { RootState } from '../state'
 import { fetchGifs as fetchGifsAction } from '../state/ducks/gifs'
@@ -22,6 +22,9 @@ interface Props {
 export function Gifs(props: Props) {
   const { query, gifs, isLoading, moreGifs, fetchGifs, openGif } = props
 
+  // Initial load of trending gifs
+  useEffect(fetchGifs, [fetchGifs])
+
   const handleGifClick = (idx: number, event: SyntheticEvent<HTMLElement, Event>) => {
     openGif(idx)
     event.stopPropagation()
@@ -42,10 +45,6 @@ export function Gifs(props: Props) {
     query,
     [gifs]
   )
-
-  // useEffect(() => {
-  //   console.log('effect ran')
-  // }, [bricksOptions.current])
 
   // Calculate the width each gif should be based on the width of the container and the
   // number of columns and gutter width at the current viewport size
@@ -74,7 +73,7 @@ export function Gifs(props: Props) {
 
   return (
     <div ref={contentContainer}>
-      <div ref={bricksContainer} key={query}>
+      <div ref={bricksContainer} key={query} className="gifs-container">
         { gifs.map(
             (gif, idx) =>
               <Gif
@@ -87,9 +86,20 @@ export function Gifs(props: Props) {
         )}
       </div>
 
+      { !isLoading && gifs.length === 0 &&
+        <div className="info">
+          No gifs found for <b>{query}</b>
+        </div>
+      }
+
       { moreGifs &&
         <div ref={loaderContainer} className="loader-container">
           { isLoading && <Loader /> }
+        </div>
+      }
+      { !moreGifs && gifs.length > 0 &&
+        <div className="info">
+          No more gifs.
         </div>
       }
     </div>

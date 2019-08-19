@@ -1,4 +1,14 @@
-.loader-container {
+.gifs-container {
+  margin-bottom: 30px;
+}
+
+.info {
   margin: 30px 0;
+  font-size: 24px;
+  text-align: center;
+}
+
+.loader-container {
+  margin-bottom: 30px;
   text-align: center;
 }

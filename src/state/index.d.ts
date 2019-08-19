@@ -13,16 +13,7 @@ export interface RootState {
 export type RootAction =
   | GifsAction
   | SearchAction
-  | ViewerAction
-
-declare module 'redux' {
-  type PayloadType<PA> = PA extends AsyncAction<infer R> ? R : never;
-
-  export type Dispatch<S> = <R, PA extends AsyncAction<R>>(action: PA) => Promise<{
-    value: PayloadType<PA>;
-    type: string;
-  }>
-}
+  | ViewerActions
 
 export type ThunkResult<R> = ThunkAction<R, RootState, undefined, RootAction>
 export type ThunkGetState = () => RootState

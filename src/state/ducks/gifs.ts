@@ -139,7 +139,7 @@ export const reducer = (
     {})
 
     // Only add gifs that aren't already in state
-    const gifs = [...state.gifs, ...data.filter(g => gifIds[g.id] === undefined)]
+    const gifs = [...state.gifs, ...data.filter((g: IGif) => gifIds[g.id] === undefined)]
 
     // Account for the possibility that requests come back out-of-order
     const offset = Math.max(state.offset, pagination.offset + pagination.count)
