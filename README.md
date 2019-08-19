@@ -1,6 +1,6 @@
 ### Starting Point
 
-I used [create-react-app](https://github.com/facebook/create-react-app) as a starting point. It seemed liked the ideal tool for a "one-off" project. Getting a development server and production build with Typescript and ES6 support with minimal configuration was convenient.
+I used [create-react-app](https://github.com/facebook/create-react-app) as a starting point. It seemed liked the ideal tool for a "one-off" project as it let me get started with a development server and production build with Typescript and ES6 support with minimal configuration.
 
 
 ### Design Considerations
@@ -13,7 +13,7 @@ I used the new Hooks API to build my React components. I hadn't used it previous
 
 ##### redux-thunk
 
-I used Redux Thunk to be able to access state inside action creators. I wanted to isolate as much logic between data and presentation layers as possible and this lead to fairly simple components.
+I used Redux Thunk to be able to access state inside action creators. I wanted to isolate as much logic between data and presentation layers as possible and I think this did a good job of leading to simpler components.
 
 ##### @giphy/react-components
 
