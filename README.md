@@ -21,4 +21,4 @@ _@giphy/react-components_ is being used for its `Gif` component. This component 
 
 #### Testing
 
-I wrote fairly robust tests for action creators, reducers and selectors. At this time I've written one very minimal test for components.
+I wrote fairly robust tests for action creators, reducers and selectors. Test written for components are not as strong at this point.

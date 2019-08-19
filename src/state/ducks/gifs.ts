@@ -33,6 +33,7 @@ export const updateStateFromGiphyResult =
 export const FETCH = 'gifs/FETCH'
 export const FETCH_PENDING = 'gifs/FETCH_PENDING'
 export const FETCH_FUFILLED = 'gifs/FETCH_FULFILLED'
+export const FETCH_REJECTED = 'gifs/FETCH_REJECTED'
 
 interface FetchResult {
   id: number
@@ -60,22 +61,35 @@ export type GifsAction =
 
 // Action Creators
 
-export const fetchGifs = (): ThunkResult<FetchAction> => {
+export const fetchGifs = (retry: boolean = true): ThunkResult<FetchAction> => {
   return (dispatch: ThunkDispatch, getState: ThunkGetState) => {
     const state = getState()
     const { query } = state.search
     const { id, offset } = state.gifs
 
-    const payload = new Promise<FetchResult>(async (resolve) => {
+    const payload = new Promise<FetchResult>(async (resolve, reject) => {
       const request = query === '' ? giphy.trending({ offset }) : giphy.search(query, { offset })
-      const response = await request
+      try {
+        const response = await request
 
-      resolve({ id, response })
+        resolve({ id, response })
+      } catch (e) {
+        reject(e)
+      }
     })
 
     return dispatch({
       type: FETCH,
       payload
+    }).catch(() => {
+      // Retry once
+      if (retry) {
+        console.log('retrying')
+        return dispatch(fetchGifs(false))
+      } else {
+        return Promise.resolve()
+        console.log('NOT RETRYING')
+      }
     })
   }
 }
@@ -109,6 +123,12 @@ export const reducer = (
     }
 
     const { data, pagination } = response
+
+    // Ignore if we have no data (example searching ~!@#$%^&() seems to break the Giphy
+    // api and return a strange 200 but with an error message and no data)
+    if (data.length === 0 && pagination === undefined) {
+      return state
+    }
 
     // This de-dupe method could be made more efficient by storing ids in a Map in state
     const gifIds = state.gifs.reduce(

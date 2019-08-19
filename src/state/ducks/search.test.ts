@@ -1,4 +1,5 @@
-import { getEmptyState, mockStore } from '../test-helpers'
+import fetch from 'jest-fetch-mock'
+import { getEmptyState, mockGiphyResponse, mockStore } from '../test-helpers'
 import { FETCH_PENDING } from './gifs'
 import {
   getEmptyState as getEmptySearchState,
@@ -7,13 +8,16 @@ import {
   UPDATE_QUERY
 } from './search'
 
-jest.mock('@giphy/js-fetch-api')
-import giphy from 'node-fetch'
-
 describe('search duck', () => {
   describe('action creators' , () => {
     describe(UPDATE_QUERY, () => {
+      beforeEach(() => {
+        fetch.resetMocks()
+      })
+
       it(`dispatches ${UPDATE_QUERY} and ${FETCH_PENDING} actions`, () => {
+        fetch.mockResponseOnce(JSON.stringify(mockGiphyResponse))
+
         const query = 'new search query'
 
         const expectedActions = [
