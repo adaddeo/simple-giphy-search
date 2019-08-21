@@ -1,5 +1,6 @@
-import { RootAction } from '../'
-import { ThunkDispatch, ThunkResult } from '../index'
+import { ofType } from 'redux-observable'
+import { mapTo } from 'rxjs/operators'
+import { Epic, RootAction } from '../index'
 import { fetchGifs } from './gifs'
 
 // State
@@ -23,7 +24,7 @@ export type SearchAction = UpdateQueryAction
 
 // Action Creators
 
-const updateQuery = (query: string): UpdateQueryAction => {
+export const search = (query: string): UpdateQueryAction => {
   return {
     type: UPDATE_QUERY,
     payload: {
@@ -32,12 +33,13 @@ const updateQuery = (query: string): UpdateQueryAction => {
   }
 }
 
-export const search = (query: string): ThunkResult<void> => {
-  return (dispatch: ThunkDispatch) => {
-    dispatch(updateQuery(query))
-    dispatch(fetchGifs())
-  }
-}
+// Epic
+
+export const epic: Epic =
+  action$ => action$.pipe(
+    ofType(UPDATE_QUERY),
+    mapTo(fetchGifs())
+  )
 
 // Reducer
 

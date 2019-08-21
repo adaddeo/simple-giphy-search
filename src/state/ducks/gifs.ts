@@ -1,50 +1,33 @@
 import { GifsResult as GiphyResult } from '@giphy/js-fetch-api'
 import { IGif } from '@giphy/js-types'
-import { AsyncAction } from 'redux-promise-middleware'
+import { ofType } from 'redux-observable'
+import { from, of } from 'rxjs'
+import {
+  catchError,
+  map,
+  retry,
+  switchMap,
+  withLatestFrom
+} from 'rxjs/operators'
 import giphy from '../../giphy'
-import { ThunkDispatch, ThunkGetState, ThunkResult } from '../index'
-import { RootAction } from '../index'
+import { Epic, RootAction, RootState } from '../index'
 import { UPDATE_QUERY } from './search'
 
 // State
 
 export interface GifsState {
-  id: number
   gifs: IGif[]
-  pendingRequests: number
+  isLoading: boolean
   offset: number
   totalCount?: number
 }
 
-export const updateStateFromGiphyResult =
-  (state: GifsState, result: GiphyResult) => {
-    const { data, pagination } = result
-
-    return {
-      ...state,
-      gifs: [...state.gifs, ...data],
-      offset: pagination.offset + pagination.count,
-      totalCount: pagination.total_count,
-      pendingRequests: state.pendingRequests - 1
-    }
-  }
-
 // Actions
 
-export const FETCH = 'gifs/FETCH'
 export const FETCH_PENDING = 'gifs/FETCH_PENDING'
 export const FETCH_FUFILLED = 'gifs/FETCH_FULFILLED'
 export const FETCH_REJECTED = 'gifs/FETCH_REJECTED'
-
-interface FetchResult {
-  id: number
-  response: GiphyResult
-}
-
-export interface FetchAction extends AsyncAction {
-  type: typeof FETCH
-  payload: Promise<FetchResult>
-}
+export const FETCH_CANCEL = 'gifs/FETCH_CANCEL'
 
 export interface FetchPendingAction {
   type: typeof FETCH_PENDING
@@ -52,54 +35,72 @@ export interface FetchPendingAction {
 
 export interface FetchFulfilledAction {
   type: typeof FETCH_FUFILLED
-  payload: FetchResult
+  payload: GiphyResult
+}
+
+export interface FetchRejectedAction {
+  type: typeof FETCH_REJECTED
+  payload: any
+}
+
+export interface FetchCancelAction {
+  type: typeof FETCH_CANCEL
 }
 
 export type GifsAction =
-  | FetchAction
   | FetchPendingAction
   | FetchFulfilledAction
+  | FetchRejectedAction
+  | FetchCancelAction
 
 // Action Creators
 
-export const fetchGifs = (retry: boolean = true): ThunkResult<FetchAction> => {
-  return (dispatch: ThunkDispatch, getState: ThunkGetState) => {
-    const state = getState()
-    const { query } = state.search
-    const { id, offset } = state.gifs
+export const fetchGifs = () => ({
+  type: FETCH_PENDING
+})
 
-    const payload = new Promise<FetchResult>(async (resolve, reject) => {
-      const request = query === '' ? giphy.trending({ offset }) : giphy.search(query, { offset })
-      try {
-        const response = await request
+export const fetchGifsFufilled = (payload: GiphyResult) => ({
+  type: FETCH_FUFILLED,
+  payload
+})
 
-        resolve({ id, response })
-      } catch (e) {
-        reject(e)
-      }
-    })
+export const fetchGifsRejected = (error: any) => ({
+  type: FETCH_REJECTED,
+  payload: error.xhr.response
+})
 
-    // @ts-ignore the redux-promise-middleware will transform this to a promise
-    return dispatch({
-      type: FETCH,
-      payload
-    }).catch(() => {
-      // Retry once
-      if (retry) {
-        return dispatch(fetchGifs(false))
-      } else {
-        return Promise.resolve()
-      }
-    })
-  }
+export const fetchGifsCancel = () => ({
+  type: FETCH_CANCEL
+})
+
+// Epics
+
+const gifsRequest = (state: RootState) => {
+  const { search: { query }, gifs: { offset } } = state
+
+  return state.search.query === '' ?
+    giphy.trending({ offset }) :
+    giphy.search(query, { offset })
 }
+
+export const epic: Epic = (action$, state$) => action$.
+  pipe(
+    ofType(FETCH_PENDING),
+    withLatestFrom(state$),
+    switchMap(([, state]) =>
+      from(gifsRequest(state)).pipe(
+        map(fetchGifsFufilled),
+        retry(3),
+        catchError(error => of(fetchGifsRejected(error.xhr.response)))
+      )
+    )
+  )
 
 // Reducer
 
-export const getEmptyState = (id: number = 0): GifsState => ({
-  id,
+export const getEmptyState = (): GifsState => ({
   gifs: [],
-  pendingRequests: 0,
+  isLoading: false,
   offset: 0
 })
 
@@ -110,19 +111,12 @@ export const reducer = (
   if (action.type === FETCH_PENDING) {
     return {
       ...state,
-      pendingRequests: state.pendingRequests + 1
+      isLoading: true
     }
   }
 
   if (action.type === FETCH_FUFILLED) {
-    const { id, response } = action.payload
-
-    // Ignore the request if it's from a previous search
-    if (state.id !== id) {
-      return state
-    }
-
-    const { data, pagination } = response
+    const { data, pagination } = action.payload
 
     // Ignore if we have no data (example searching ~!@#$%^&() seems to break the Giphy
     // api and return a strange 200 but with an error message and no data)
@@ -149,12 +143,12 @@ export const reducer = (
       gifs,
       offset,
       totalCount: pagination.total_count,
-      pendingRequests: state.pendingRequests - 1
+      isLoading: false
     }
   }
 
   if (action.type === UPDATE_QUERY) {
-    return getEmptyState(state.id + 1)
+    return getEmptyState()
   }
 
   return state

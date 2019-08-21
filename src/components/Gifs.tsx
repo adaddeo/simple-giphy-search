@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import { RootState } from '../state'
 import { fetchGifs as fetchGifsAction } from '../state/ducks/gifs'
 import { openGif as openGifAction } from '../state/ducks/viewer'
-import { isLoadingSelector, moreGifsSelector } from '../state/selectors'
+import { moreGifsSelector } from '../state/selectors'
 import './Gifs.css'
 import { useBricks, useClientRect, useIntersectionObserver } from './hooks'
 import Loader from './Loader'
@@ -110,7 +110,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     query: state.search.query,
     gifs: state.gifs.gifs,
-    isLoading: isLoadingSelector(state),
+    isLoading: state.gifs.isLoading,
     moreGifs: moreGifsSelector(state)
   }
 }
